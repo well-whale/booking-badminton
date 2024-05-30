@@ -54,9 +54,10 @@ img {
   .booking__container form {
     width: 100%;
     flex: 1;
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    gap:3rem;
+    align-items: end;
   }
   
   .booking__container .input__group {
@@ -64,17 +65,7 @@ img {
     position: relative;
   }
   
-  .booking__container label {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--text-dark);
-    pointer-events: none;
-    transition: 0.3s;
-  }
+ */
   
   .booking__container input,
   .booking__container select {

@@ -9,7 +9,6 @@ import image4 from '../../../img/lequydon.png';
 import image5 from '../../../img/thaotrang.png';
 import image6 from '../../../img/thuysan.png';
 import { GiTennisCourt } from "react-icons/gi";
-import {Autocomplete,TextField} from '@mui/material';
 import Search from '../search/Search';
 
 
@@ -91,39 +90,6 @@ const HomePage = () => {
         <div className="header__content">
           <h1>Book Your Badminton Court</h1>
           <p>Play with Ease!</p>
-        </div>
-        <div className="booking__container">
-          <form>
-            <div className="form__group">
-              <div className="input__group">
-                <select defaultValue="">
-                  <option value="" disabled>Select location</option>
-                  {address.map((location, index) => (
-                    <option key={index} value={location}>{location}</option>
-                  ))}
-                </select>
-              </div>
-              <p>Where are you playing?</p>
-            </div>
-            {/* <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={address}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Location" />}
-                /> */}
-            <div className="form__group">
-              <div className="input__group">
-                <input type="date" />
-                <label>Check In</label>
-              </div>
-              <p>Add date</p>
-            </div>
-          </form>
-          <button className="search" type="submit">
-            <div id="s-circle"></div>
-            Search
-          </button>
         </div>
         <Search/>
       </div>

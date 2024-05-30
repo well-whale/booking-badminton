@@ -2,6 +2,7 @@
 .court-review-container {
     max-width: 1200px;
     margin: auto;
+    margin-bottom: 20px;
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
