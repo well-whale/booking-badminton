@@ -3,10 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { NavLink } from "react-router-dom";
 import { Autocomplete, TextField } from '@mui/material';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 import "../search/Search.css"
 const address = [
   "Quận 1", "Quận 3", "Quận 4", "Quận 5", "Quận 6", "Quận 7", "Quận 8",
@@ -30,7 +27,7 @@ const Search = () => {
           </div>
           <p>Where are you playing?</p>
         </div>
-        <div className="form__group">
+        {/* <div className="form__group">
           <div className="input__group">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={['DatePicker']}>
@@ -39,7 +36,7 @@ const Search = () => {
             </LocalizationProvider>
           </div>
           <p>When do you want to play?</p>
-        </div>
+        </div> */}
       </form>
       <button className="search" type="submit">
         <div id="s-circle"></div>

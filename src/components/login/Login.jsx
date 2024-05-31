@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { FcGoogle, FcPhone } from "react-icons/fc";
+import Stack from '@mui/material/Stack';
+// import Button from '@mui/material/Button';
 import { NavLink } from "react-router-dom";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import SignupForm from "../signup/Signup";
 import "../login/Login.css"
+import GoogleOAuth from "./Google_OAuth";
 function LoginForm() {
     const [state, setState] = useState({
         email: "",
@@ -31,8 +35,16 @@ function LoginForm() {
             <form onSubmit={handleOnSubmit}>
                 <h1>Login</h1>
                 <div className="social-container">
-                    <NavLink to="/googleoauth" className="social"><FcGoogle /></NavLink>
-                    <NavLink to="/loginotp" className="social"><FcPhone /></NavLink>
+                    <>
+                        <GoogleOAuthProvider clientId="21328047732-02qfv7vb9ku5n0ov51v8d3k8vqb7e1ab.apps.googleusercontent.com">
+                            <GoogleOAuth />
+                        </GoogleOAuthProvider>
+                    </>
+                    <NavLink to="/loginotp" >
+                        <button className="logphone" type="submit">Sign in with phone</button>
+
+                    </NavLink>
+
                 </div>
                 <span>or use your account</span>
                 <input
@@ -56,7 +68,7 @@ function LoginForm() {
                     />
                 </div>
                 <a href="#">Forgot your password?</a>
-                <button type="submit">Login</button>
+                <button className="submit" type="submit">Login</button>
             </form>
         </div>
     );

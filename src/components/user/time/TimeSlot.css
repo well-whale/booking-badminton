@@ -33,8 +33,8 @@ body {
 }
 
 .area-selection {
-  display: flex;
-  align-items: center;
+  display: inline-grid;
+  align-items: baseline;
   font-size: 18px;
 }
 

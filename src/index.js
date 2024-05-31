@@ -13,6 +13,7 @@ import CourtDetail from './components/user/courts/CourtDetail';
 import ListCourt from './components/user/courts/ListCourt';
 import CourtReview from './components/user/courts/CourtReview';
 import TimeSlots from './components/user/time/TimeSlot';
+import Payment from './components/user/payment/Payment';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -65,6 +66,13 @@ root.render(
               <TimeSlots />
             </>}
         />
+        <Route 
+        path="payment" 
+        element={<>
+        <Header/>
+        <Payment />
+        </>} />
+
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

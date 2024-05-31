@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import "./TimeSlot.css"; // Import the CSS file
 
 // Function to generate time slots
@@ -87,6 +91,23 @@ const TimeSlots = () => {
   return (
     <div className="container">
       <div className="left-section">
+        <div className="area-selection">
+          <label>Chọn Sân:</label>
+          <select onChange={handleAreaChange} value={selectedArea}>
+            {areas.map(area => (
+              <option key={area} value={area}>
+                {area}
+              </option>
+            ))}
+          </select>
+          <div className="input__group">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DatePicker']}>
+                <DatePicker label="Date" />
+              </DemoContainer>
+            </LocalizationProvider>
+          </div>
+        </div>
         <h3>Ca Sáng </h3>
         <div id="time-slots" className="times-container">
           {timeSlotsAM.map(({ timeString, id }) => (
@@ -125,16 +146,6 @@ const TimeSlots = () => {
               <h5>Thành tiền: {totalPrice.toLocaleString()} VND</h5>
             </div>
           )}
-        </div>
-        <div className="area-selection">
-          <label>Chọn Sân:</label>
-          <select onChange={handleAreaChange} value={selectedArea}>
-            {areas.map(area => (
-              <option key={area} value={area}>
-                {area}
-              </option>
-            ))}
-          </select>
         </div>
         <button className="payment-button">
           <NavLink className="dropdown-item" to="/payment">
