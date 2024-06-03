@@ -12,6 +12,7 @@ const CourtReview = () => {
   const [newReview, setNewReview] = useState({ rating: 0, comment: "" });
   const [averageRating, setAverageRating] = useState(0);
 
+  
   useEffect(() => {
     // Fetch existing reviews from server (placeholder)
     axios.get("/api/reviews")

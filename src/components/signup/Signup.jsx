@@ -2,6 +2,8 @@ import React from "react";
 import { FcGoogle, FcPhone } from "react-icons/fc";
 import { NavLink } from "react-router-dom";
 import "../signup/Signup.css"
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import GoogleOAuth from "../login/Google_OAuth";
 
 function SignupForm() {
     const [state, setState] = React.useState({
@@ -38,8 +40,16 @@ function SignupForm() {
             <form onSubmit={handleOnSubmit}>
                 <h1>Create Account</h1>
                 <div className="social-container">
-                    <NavLink to="/GoogleOAuth" className="social"><FcGoogle /></NavLink>
-                    <NavLink to="/LoginPopup" className="social"><FcPhone /></NavLink>
+                    <>
+                        <GoogleOAuthProvider clientId="21328047732-02qfv7vb9ku5n0ov51v8d3k8vqb7e1ab.apps.googleusercontent.com">
+                            <GoogleOAuth />
+                        </GoogleOAuthProvider>
+                    </>
+                    <NavLink to="/loginotp" >
+                        <button className="logphone" type="submit">Sign in with phone</button>
+
+                    </NavLink>
+
                 </div>
                 <span>or use your email for registration</span>
                 <input
@@ -63,7 +73,7 @@ function SignupForm() {
                     onChange={handleChange}
                     placeholder="Password"
                 />
-                <button>Signup</button>
+                <button className="submit" type="submit">Signup</button>
             </form>
         </div>
     );

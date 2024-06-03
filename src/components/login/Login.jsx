@@ -1,66 +1,62 @@
 import React, { useState } from "react";
-import { FcGoogle, FcPhone } from "react-icons/fc";
-import Stack from '@mui/material/Stack';
-// import Button from '@mui/material/Button';
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import SignupForm from "../signup/Signup";
-import "../login/Login.css"
+import "../login/Login.css";
 import GoogleOAuth from "./Google_OAuth";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { loginUser } from "../../redux/apiRequest";
+import { useDispatch } from "react-redux";
+
 function LoginForm() {
-    const [state, setState] = useState({
-        email: "",
-        password: ""
-    });
-
-    const handleChange = evt => {
-        const value = evt.target.value;
-        setState({
-            ...state,
-            [evt.target.name]: value
-        });
-    };
-
-    const handleOnSubmit = evt => {
-        evt.preventDefault();
-        const { email, password } = state;
-        alert(`You are logging in with email: ${email} and password: ${password}`);
-        setState({ email: "", password: "" });
-    };
-
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [isShowPassword, setIsShowPassword] = useState(false);
+
+    const handleLogin = (e) => {
+        e.preventDefault();
+
+        if (!username || !password) {
+            toast.error("Both username and password fields are required.");
+            return;
+        }
+
+        const newUser = {
+            username: username,
+            password: password,
+        };
+
+        loginUser(newUser, dispatch,navigate);
+    };
 
     return (
         <div className="form-container sign-in-container">
-            <form onSubmit={handleOnSubmit}>
+            <form onSubmit={handleLogin}>
                 <h1>Login</h1>
                 <div className="social-container">
-                    <>
-                        <GoogleOAuthProvider clientId="21328047732-02qfv7vb9ku5n0ov51v8d3k8vqb7e1ab.apps.googleusercontent.com">
-                            <GoogleOAuth />
-                        </GoogleOAuthProvider>
-                    </>
-                    <NavLink to="/loginotp" >
-                        <button className="logphone" type="submit">Sign in with phone</button>
-
+                    <GoogleOAuthProvider clientId="21328047732-02qfv7vb9ku5n0ov51v8d3k8vqb7e1ab.apps.googleusercontent.com">
+                        <GoogleOAuth />
+                    </GoogleOAuthProvider>
+                    <NavLink to="/loginotp">
+                        <button className="logphone" type="button">Sign in with phone</button>
                     </NavLink>
-
                 </div>
                 <span>or use your account</span>
                 <input
-                    type="email"
-                    placeholder="Email"
-                    name="email"
-                    value={state.email}
-                    onChange={handleChange}
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                 />
                 <div className="input-pass">
                     <input
                         type={isShowPassword ? "text" : "password"}
-                        name="password"
                         placeholder="Password"
-                        value={state.password}
-                        onChange={handleChange}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
                     <i
                         className={isShowPassword ? "fa-solid fa-eye" : "fa-sharp fa-solid fa-eye-slash"}
@@ -70,6 +66,7 @@ function LoginForm() {
                 <a href="#">Forgot your password?</a>
                 <button className="submit" type="submit">Login</button>
             </form>
+            <ToastContainer />
         </div>
     );
 }
@@ -82,7 +79,9 @@ function LoginAndSignupForm() {
             setType(text);
         }
     };
+
     const containerClass = `container ${type === "signUp" ? "right-panel-active" : ""}`;
+
     return (
         <div className="App">
             <div className={containerClass} id="container">
