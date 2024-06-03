@@ -20,7 +20,7 @@ function LoginForm() {
         e.preventDefault();
 
         if (!username || !password) {
-            toast.error("Both username and password fields are required.");
+            toast.error("Both username and password fields are rquired.");
             return;
         }
 
