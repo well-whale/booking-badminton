@@ -1,0 +1,67 @@
+/* NewUser.css */
+
+.new {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .newContainer {
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .newContainer h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .newContainer form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .newContainer .form-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .newContainer .form-group > div {
+    flex: 1;
+    min-width: calc(50% - 20px);
+  }
+  
+  .newContainer .form-group.full-width {
+    flex-wrap: nowrap;
+  }
+  
+  .newContainer .form-button {
+    align-self: center;
+    padding: 10px 30px;
+    border-radius: 5px;
+    background-color: #1976d2;
+    color: #fff;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .newContainer .form-button:hover {
+    background-color: #155a9a;
+  }
+  
+  .MuiTextField-root {
+    margin-bottom: 20px;
+  }
+  
+  .MuiFormControlLabel-root {
+    margin-bottom: 20px;
+  }
+  

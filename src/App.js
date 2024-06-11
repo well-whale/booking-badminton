@@ -14,67 +14,85 @@ import ListCourt from './components/user/courts/ListCourt';
 import CourtReview from './components/user/courts/CourtReview';
 import TimeSlots from './components/user/time/TimeSlot';
 import Payment from './components/user/payment/Payment';
+import Home from './components/admin/pages/home/Home'
+import Customer from './components/admin/pages/customers/Customer';
+import NewUser from './components/admin/pages/new/NewUser';
 function App() {
   return (
     <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="login"
-          element={<>
-            <Header />
-            <LoginAndSignupForm />
-          </>}
-        />
-        <Route
-          path="/"
-          element={<>
-            <Header />
-            <HomePage />
-            <Footer />
-          </>}
-        />
-        <Route
-          path="googleoauth"
-          element={<>
-            <GoogleOAuthProvider clientId="21328047732-02qfv7vb9ku5n0ov51v8d3k8vqb7e1ab.apps.googleusercontent.com">
-              <GoogleOAuth />
-            </GoogleOAuthProvider>
-          </>}
-        />
-        <Route
-          path="loginotp"
-          element={<LoginOTP />}
-        />
-        <Route
-          path="view"
-          element={
-            <>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="login"
+            element={<>
               <Header />
-              <CourtDetail />
-              <ListCourt />
-              <CourtReview />
+              <LoginAndSignupForm />
+            </>}
+          />
+          <Route
+            path="/"
+            element={<>
+              <Header />
+              <HomePage />
               <Footer />
             </>}
-        />
-        <Route
-          path="booking"
-          element={
-            <>
-              <Header />
-              <TimeSlots />
+          />
+          <Route
+            path="googleoauth"
+            element={<>
+              <GoogleOAuthProvider clientId="21328047732-02qfv7vb9ku5n0ov51v8d3k8vqb7e1ab.apps.googleusercontent.com">
+                <GoogleOAuth />
+              </GoogleOAuthProvider>
             </>}
-        />
-        <Route 
-        path="payment" 
-        element={<>
-        <Header/>
-        <Payment />
-        </>} />
+          />
+          <Route
+            path="loginotp"
+            element={<LoginOTP />}
+          />
+          <Route
+            path="view"
+            element={
+              <>
+                <Header />
+                <CourtDetail />
+                <ListCourt />
+                <CourtReview />
+                <Footer />
+              </>}
+          />
+          <Route
+            path="booking"
+            element={
+              <>
+                <Header />
+                <TimeSlots />
+              </>}
+          />
+          <Route
+            path="payment"
+            element={<>
+              <Header />
+              <Payment />
+            </>} />
+          <Route
+            path="admin/home"
+            element={<>
+              <Home />
+            </>} />
+          <Route
+            path="admin/users"
+            element={<>
+              <Customer />
+            </>} />
+          <Route
+            path="admin/users/new"
+            element={
+              <NewUser />
+            } />
 
-      </Routes>
-    </BrowserRouter>
-  </React.StrictMode>
+        </Routes>
+      </BrowserRouter>
+    </React.StrictMode>
   );
 }
 
