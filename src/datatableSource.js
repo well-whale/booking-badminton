@@ -37,6 +37,7 @@ export const userColumns = [
 ];
 export const datacourt = [
   {
+    
     courtId: 1,
     courtName: "Central District Court",
     district: "Central District",
@@ -44,6 +45,7 @@ export const datacourt = [
     courtQuanity: 5
   },
   {
+    
     courtId: 2,
     courtName: "Northern District Court",
     district: "Northern District",
@@ -51,6 +53,7 @@ export const datacourt = [
     courtQuanity: 3
   },
   {
+   
     courtId: 3,
     courtName: "Southern District Court",
     district: "Southern District",
@@ -58,53 +61,12 @@ export const datacourt = [
     courtQuanity: 4
   },
   {
+    
     courtId: 4,
     courtName: "Eastern District Court",
     district: "Eastern District",
     courtAddress: "101 East Boulevard, East City",
     courtQuanity: 6
-  },
-  {
-    courtId: 5,
-    courtName: "Western District Court",
-    district: "Western District",
-    courtAddress: "202 West Drive, West City",
-    courtQuanity: 2
-  },
-  {
-    courtId: 6,
-    courtName: "Mountain District Court",
-    district: "Mountain District",
-    courtAddress: "303 Mountain Pass, Mountain City",
-    courtQuanity: 3
-  },
-  {
-    courtId: 7,
-    courtName: "Valley District Court",
-    district: "Valley District",
-    courtAddress: "404 Valley Street, Valley City",
-    courtQuanity: 4
-  },
-  {
-    courtId: 8,
-    courtName: "Coastal District Court",
-    district: "Coastal District",
-    courtAddress: "505 Beach Road, Coastal City",
-    courtQuanity: 5
-  },
-  {
-    courtId: 9,
-    courtName: "Lake District Court",
-    district: "Lake District",
-    courtAddress: "606 Lake Avenue, Lake City",
-    courtQuanity: 3
-  },
-  {
-    courtId: 10,
-    courtName: "Forest District Court",
-    district: "Forest District",
-    courtAddress: "707 Forest Lane, Forest City",
-    courtQuanity: 4
   }
 ];
 

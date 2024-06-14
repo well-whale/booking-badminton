@@ -1,44 +1,50 @@
 import React, { useState } from "react";
 import Sidebar from "../../components/sidebar/Sidebar";
 import { DataGrid } from "@mui/x-data-grid";
-import { dataEX } from "./../../../../datatableSource";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Link } from "react-router-dom";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import UpdateIcon from "@mui/icons-material/Update";
 import "../customers/Customer.css";
-import UserDetail from "../single/UserDetail";
-import NewUser from "../new/NewUser";
-import UpdateUser from "../update/UpdateUser";
+import CourtDetail from "../single/CourtDetail";
+import NewCourt from "../new/NewCourt";
+import { datacourt } from "../../../../datatableSource";
 
-const Customer = () => {
-  const [data, setData] = useState(dataEX);
+const Courts = () => {
+  const [data, setData] = useState(datacourt);
   const [open, setOpen] = useState(false);
   const [dialogType, setDialogType] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedCourt, setSelectedCourt] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
 
-  const handleDelete = (id) => {
-    setDeleteId(id);
+  const handleDelete = (courtId) => {
+    setDeleteId(courtId);
     setDialogType("delete");
     setOpen(true);
   };
 
   const confirmDelete = () => {
-    setData(data.filter((item) => item.id !== deleteId));
+    setData(data.filter((item) => item.courtId !== deleteId));
     handleClose();
   };
 
-  const handleClickOpen = (user, type) => {
-    setSelectedUser(user);
+  const handleClickOpen = (court, type) => {
+    setSelectedCourt(court);
     setDialogType(type);
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
-    setSelectedUser(null);
+    setSelectedCourt(null);
     setDeleteId(null);
   };
 
@@ -57,19 +63,20 @@ const Customer = () => {
           >
             View
           </Button>
-          <Button
-            variant="outlined"
-            color="warning"
-            startIcon={<UpdateIcon />}
-            onClick={() => handleClickOpen(params.row, "update")}
-          >
-            Update
-          </Button>
+          <Link to={`/admin/court/update/${params.row.courtId}`}>
+            <Button
+              variant="outlined"
+              color="success"
+              startIcon={<UpdateIcon />}
+            >
+              Update
+            </Button>
+          </Link>
           <Button
             variant="outlined"
             color="error"
             startIcon={<DeleteIcon />}
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleDelete(params.row.courtId)}
           >
             Delete
           </Button>
@@ -78,13 +85,12 @@ const Customer = () => {
     },
   ];
 
-  const userColumns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "firstname", headerName: "First Name", width: 140 },
-    { field: "lastname", headerName: "Last Name", width: 140 },
-    { field: "email", headerName: "Email", width: 200 },
-    { field: "phone", headerName: "Phone", width: 100 },
-    { field: "role", headerName: "Role", width: 100 },
+  const courtColumns = [
+    { field: "courtId", headerName: "Court ID", width: 70 },
+    { field: "courtName", headerName: "Court Name", width: 200 },
+    { field: "district", headerName: "District", width: 140 },
+    { field: "courtAddress", headerName: "Court Address", width: 200 },
+    { field: "courtQuantity", headerName: "Court Quantity", width: 150 },
   ];
 
   return (
@@ -93,7 +99,7 @@ const Customer = () => {
       <div className="customerContainer">
         <div className="datatable">
           <div className="datatableTitle">
-            <span>Customers</span>
+            <span>Courts</span>
             <Button
               variant="outlined"
               color="success"
@@ -102,37 +108,39 @@ const Customer = () => {
             >
               Add New
             </Button>
+            
           </div>
           <DataGrid
-            className="datagrid"
             rows={data}
-            columns={userColumns.concat(actionColumn)}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
+            columns={courtColumns.concat(actionColumn)}
+            pageSize={9}
+            rowsPerPageOptions={[9]}
+            disableSelectionOnClick
+            getRowId={(row) => row.courtId}
           />
         </div>
       </div>
 
-      {dialogType === "view" && selectedUser && (
-        <UserDetail open={open} onClose={handleClose} user={selectedUser} />
+      {dialogType === "view" && selectedCourt && (
+        <CourtDetail open={open} onClose={handleClose} court={selectedCourt} />
       )}
       {dialogType === "new" && (
-        <NewUser open={open} handleClose={handleClose} />
+        <NewCourt open={open} handleClose={handleClose} />
       )}
-      {dialogType === "update" && (
-        <UpdateUser open={open} handleClose={handleClose} user={selectedUser}/>
-      )}
+      {/* {dialogType === "update" && (
+        <UpdateCourt open={open} handleClose={handleClose} court={selectedCourt} />
+      )} */}
       {dialogType === "delete" && (
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogContent>
-            Are you sure you want to delete this customer?
+            Are you sure you want to delete this court?
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={confirmDelete} color="secondary">
+            <Button onClick={confirmDelete} color="error">
               Confirm
             </Button>
           </DialogActions>
@@ -142,4 +150,4 @@ const Customer = () => {
   );
 };
 
-export default Customer;
+export default Courts;

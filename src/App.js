@@ -7,7 +7,6 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleOAuth from './components/login/Google_OAuth';
 import Header from './components/user/header/Header';
 import Footer from './components/user/footer/Footer';
-import Search from './components/user/search/Search';
 import HomePage from './components/user/home/Home';
 import CourtDetail from './components/user/courts/CourtDetail';
 import ListCourt from './components/user/courts/ListCourt';
@@ -17,9 +16,14 @@ import Payment from './components/user/payment/Payment';
 import Home from './components/admin/pages/home/Home'
 import Customer from './components/admin/pages/customers/Customer';
 import NewUser from './components/admin/pages/new/NewUser';
+import Courts from './components/admin/pages/courts/Courts';
+
+import UpdateCourt from './components/admin/pages/update/UpdateCourt';
 function App() {
   return (
+    
     <React.StrictMode>
+      
       <BrowserRouter>
         <Routes>
           <Route
@@ -84,11 +88,20 @@ function App() {
             element={<>
               <Customer />
             </>} />
+            <Route
+            path="admin/court"
+            element={<>
+            <Courts/>
+            </>} />
           <Route
+          
             path="admin/users/new"
             element={
               <NewUser />
             } />
+             <Route 
+             path="/admin/court/update/:courtId"
+              element={<UpdateCourt/>} />
 
         </Routes>
       </BrowserRouter>

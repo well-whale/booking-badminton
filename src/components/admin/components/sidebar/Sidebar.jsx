@@ -37,7 +37,7 @@ const Sidebar = () => {
             </li>
           </NavLink>
 
-          <NavLink to="/court" className={({ isActive }) => isActive ? "active" : ""}>
+          <NavLink to="/admin/court" className={({ isActive }) => isActive ? "active" : ""}>
             <li>
               <BackupTableIcon className="icon" />
               <span>Court</span>

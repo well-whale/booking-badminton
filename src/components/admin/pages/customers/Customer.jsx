@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/sidebar/Sidebar";
 import { DataGrid } from "@mui/x-data-grid";
-import { dataEX } from "./../../../../datatableSource";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -11,13 +10,29 @@ import "../customers/Customer.css";
 import UserDetail from "../single/UserDetail";
 import NewUser from "../new/NewUser";
 import UpdateUser from "../update/UpdateUser";
+import axios from "axios";
+import { fetchAllUsers } from "../../../../services/UserServices";
 
 const Customer = () => {
-  const [data, setData] = useState(dataEX);
+  const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [dialogType, setDialogType] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetchAllUsers();
+      setData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleDelete = (id) => {
     setDeleteId(id);
@@ -25,9 +40,14 @@ const Customer = () => {
     setOpen(true);
   };
 
-  const confirmDelete = () => {
-    setData(data.filter((item) => item.id !== deleteId));
-    handleClose();
+  const confirmDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:8080/demo/admin/list-users/${deleteId}`);
+      setData(data.filter((item) => item.email !== deleteId));
+      handleClose();
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
   };
 
   const handleClickOpen = (user, type) => {
@@ -69,7 +89,7 @@ const Customer = () => {
             variant="outlined"
             color="error"
             startIcon={<DeleteIcon />}
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleDelete(params.row.email)}
           >
             Delete
           </Button>
@@ -80,8 +100,8 @@ const Customer = () => {
 
   const userColumns = [
     { field: "id", headerName: "ID", width: 70 },
-    { field: "firstname", headerName: "First Name", width: 140 },
-    { field: "lastname", headerName: "Last Name", width: 140 },
+    { field: "firstName", headerName: "First Name", width: 140 },
+    { field: "lastName", headerName: "Last Name", width: 140 },
     { field: "email", headerName: "Email", width: 200 },
     { field: "phone", headerName: "Phone", width: 100 },
     { field: "role", headerName: "Role", width: 100 },
@@ -117,10 +137,10 @@ const Customer = () => {
         <UserDetail open={open} onClose={handleClose} user={selectedUser} />
       )}
       {dialogType === "new" && (
-        <NewUser open={open} handleClose={handleClose} />
+        <NewUser open={open} handleClose={handleClose} refreshData={fetchData} />
       )}
       {dialogType === "update" && (
-        <UpdateUser open={open} handleClose={handleClose} user={selectedUser}/>
+        <UpdateUser open={open} handleClose={handleClose} user={selectedUser} refreshData={fetchData} />
       )}
       {dialogType === "delete" && (
         <Dialog open={open} onClose={handleClose}>

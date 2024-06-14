@@ -8,7 +8,10 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  IconButton
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from '@mui/icons-material/Edit';
 import "../update/UpdateUser.css";
 
 const Transition = React.forwardRef((props, ref) => (
@@ -86,93 +89,95 @@ const UpdateUser = ({ open, handleClose, user }) => {
     >
       <div className="update">
         <div className="updateContainer">
-          <h3>Update Customer</h3>
+          <div className="header">
+            <h3> <EditIcon style={{fontSize:"70px"}}/>Update User Form</h3>
+            <IconButton aria-label="close" onClick={handleClose} color="error" className="close-button">
+              <CloseIcon />
+            </IconButton>
+          </div>
           <form onSubmit={handleSubmit}>
-            <div>
-              <TextField
-                id="firstName"
-                label="First Name*"
-                variant="outlined"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                id="lastName"
-                label="Last Name*"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
+            <div className="form-row">
+              <div className="form-column">
+                <TextField
+                  id="firstName"
+                  label="First Name*"
+                  variant="outlined"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  id="lastName"
+                  label="Last Name*"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  id="email"
+                  label="Email*"
+                  variant="outlined"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  type="email"
+                  fullWidth
+                  margin="normal"
+                />
+              </div>
+              <div className="form-column">
+                <TextField
+                  id="password"
+                  label="Password*"
+                  variant="outlined"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  id="phone"
+                  label="Phone*"
+                  variant="outlined"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  type="tel"
+                  fullWidth
+                  margin="normal"
+                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel id="demo-simple-select-label">Role</InputLabel>
+                  <Select
+                    labelId="role-select-label"
+                    id="role-select"
+                    value={formData.role}
+                    label="Role"
+                    onChange={handleRoleChange}
+                  >
+                    <MenuItem value="admin">Admin</MenuItem>
+                    <MenuItem value="user">User</MenuItem>
+                    <MenuItem value="staff">Staff</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
             </div>
-            <div>
-              <TextField
-                id="email"
-                label="Email*"
-                variant="outlined"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                type="email"
-                fullWidth
-                margin="normal"
-              />
+            <div className="form-buttons">
+              <Button
+                type="submit"
+                variant="contained"
+                color="warning"
+                className="form-button"
+              >
+                Update
+              </Button>
+              
             </div>
-            <div>
-              <TextField
-                id="password"
-                label="Password"
-                variant="outlined"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                type="password"
-                fullWidth
-                margin="normal"
-                helperText="Leave blank to keep current password"
-              />
-            </div>
-            <div>
-              <TextField
-                id="phone"
-                label="Phone*"
-                variant="outlined"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                type="tel"
-                fullWidth
-                margin="normal"
-              />
-            </div>
-            <div>
-              <FormControl fullWidth margin="normal">
-                <InputLabel id="role-select-label">Role</InputLabel>
-                <Select
-                  labelId="role-select-label"
-                  id="role-select"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleRoleChange}
-                >
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="user">User</MenuItem>
-                  <MenuItem value="staff">Staff</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              className="form-button"
-            >
-              Update
-            </Button>
           </form>
         </div>
       </div>

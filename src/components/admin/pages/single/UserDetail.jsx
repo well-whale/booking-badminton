@@ -5,7 +5,6 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import UpdateIcon from "@mui/icons-material/Update";
 import "../single/UserDetail.css";
 
 const UserDetail = ({ open, onClose, user }) => {
@@ -30,7 +29,7 @@ const UserDetail = ({ open, onClose, user }) => {
                     className="itemImg"
                   />
                   <div className="details">
-                    <h1 className="itemTitle">{user.firstname} {user.lastname}</h1>
+                    <h1 className="itemTitle">{user.firstName} {user.lastName}</h1>
                     <div className="detailItem">
                       <span className="itemKey">Email: </span>
                       <span className="itemValue">{user.email}</span>
