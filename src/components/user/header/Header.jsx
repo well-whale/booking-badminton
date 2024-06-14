@@ -17,9 +17,9 @@ const Header = () => {
                 <ul className="nav__links">
                     <li className="link"><NavLink to="/">Home</NavLink></li>
                     <li className="link"><NavLink to="/search">Book</NavLink></li>
-                    <li className="link"><NavLink to="/booked">Your Booked</NavLink></li>
+                    <li className="link"><NavLink to="/admin/home">Your Booked</NavLink></li>
                     <li className="nav-item dropdown">
-                        <span className="nav-link dropdown-toggle" role="button"><AccountCircleIcon/></span>
+                        <span className="nav-link dropdown-toggle" role="button"><AccountCircleIcon/>  My account</span>
                         <ul className="dropdown-menu">
                             <li className="link"><NavLink to="/login">LogIn</NavLink></li>
                             <li className="link"><NavLink to="/">LogOut</NavLink></li>
