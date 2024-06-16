@@ -19,6 +19,9 @@ import NewUser from './components/admin/pages/new/NewUser';
 import Courts from './components/admin/pages/courts/Courts';
 
 import UpdateCourt from './components/admin/pages/update/UpdateCourt';
+import Search from './components/user/search/Search';
+import SearchList from './components/user/courts/SearchList';
+import SearchAndList from './components/user/courts/SearchList';
 function App() {
   return (
     
@@ -53,15 +56,23 @@ function App() {
             path="loginotp"
             element={<LoginOTP />}
           />
+           <Route 
+           path="/view/:idCourt" 
+           element={<>
+            <Header />
+            <CourtDetail />
+            <ListCourt />
+            {/* <CourtReview /> */}
+            <Footer />
+          </>} />
+          
           <Route
-            path="view"
+            path="/search"
             element={
               <>
                 <Header />
-                <CourtDetail />
-                <ListCourt />
-                <CourtReview />
-                <Footer />
+                <SearchAndList/>
+                {/* <Footer /> */}
               </>}
           />
           <Route

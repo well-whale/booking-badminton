@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { NavLink } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useParams, NavLink } from "react-router-dom";
 import ReactImageGallery from "react-image-gallery";
-import Rating from '@mui/material/Rating';
 import "react-image-gallery/styles/css/image-gallery.css";
 import "../courts/CourtDetail.css";
 import { CiWifiOn } from "react-icons/ci";
@@ -10,13 +9,45 @@ import { GiWaterBottle } from "react-icons/gi";
 import { IoFastFoodOutline } from "react-icons/io5";
 import { IoRestaurantOutline } from "react-icons/io5";
 import { LuMapPin } from "react-icons/lu";
-import { FaHeart } from "react-icons/fa";
-const CourtDetail = () => {
-  const [isFavorited, setIsFavorited] = useState(false); // Biến trạng thái để theo dõi trạng thái yêu thích
+import { getCourtByIdCourt } from '../../../services/UserServices';
 
-  const toggleFavorite = () => {
-    setIsFavorited(!isFavorited); // Đảo ngược trạng thái yêu thích
+const CourtDetail = () => {
+  const { idCourt } = useParams();
+  const [court, setCourt] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const getDetailCourt = async () => {
+    try {
+      const res = await getCourtByIdCourt(idCourt);
+      if (res.status === 200) {
+        setCourt(res.data);
+        console.log(res.data);
+      } else {
+        setError("Failed to fetch court details");
+      }
+    } catch (err) {
+      setError("An error occurred while fetching court details");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    getDetailCourt();
+  }, [idCourt]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (!court) {
+    return <div>No court details available</div>;
+  }
 
   const amenities = [
     { name: 'Wifi', icon: <CiWifiOn /> },
@@ -26,77 +57,74 @@ const CourtDetail = () => {
     { name: 'Đồ ăn', icon: <IoFastFoodOutline /> }
   ];
 
-  const productDetailItem = {
-    images: [
-      {
-        original: "https://sonsanepoxy.vn/wp-content/uploads/2023/07/Thi-cong-san-cau-long.jpg",
-        thumbnail: "https://sonsanepoxy.vn/wp-content/uploads/2023/07/Thi-cong-san-cau-long.jpg"
-      },
-      {
-        original: "https://sonsanepoxy.vn/wp-content/uploads/2023/07/lap-dat-he-thong-den-chieu-san-cau-long.jpg",
-        thumbnail: "https://sonsanepoxy.vn/wp-content/uploads/2023/07/lap-dat-he-thong-den-chieu-san-cau-long.jpg"
-      },
-      {
-        original: "https://storage.googleapis.com/leep_app_website/2021/03/kich-thuoc-san-cau-long-2.jpg",
-        thumbnail: "https://storage.googleapis.com/leep_app_website/2021/03/kich-thuoc-san-cau-long-2.jpg"
-      },
-      {
-        original: "https://img.meta.com.vn/Data/image/2019/05/15/kich-thuoc-san-cau-long-tieu-chuan.png",
-        thumbnail: "https://img.meta.com.vn/Data/image/2019/05/15/kich-thuoc-san-cau-long-tieu-chuan.png"
-      },
-    ],
-    title: "Sân cầu lông Tre Xanh",
-    clock: "5H - 23H",
-    numberofcourt: "6 sân",
-    address: "50 Xô Viết Nghệ Tĩnh, Phường 19, Bình Thạnh, Thành phố Hồ Chí Minh",
-    phoneNumber: "03456789",
-    socialMedia: "Facebook",
-    price: "Từ 50.000 vnđ/h/sân.",
-    star:5
-  };  
+  //Hiển thị giừo hoạt đông từ giờ sớm nhất đến muộn nhất 
+  const getOperatingHours = (slots) => {
+    if (Array.isArray(slots) && slots.length > 0) {
+      const times = slots.map(slot => ({
+        open: slot.openTime,
+        close: slot.closeTime
+      }));
+      const earliestOpen = Math.min(...times.map(t => new Date(`1970-01-01T${t.open}`).getTime()));
+      const latestClose = Math.max(...times.map(t => new Date(`1970-01-01T${t.close}`).getTime()));
+      const formatTime = time => new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      return `${formatTime(earliestOpen)} - ${formatTime(latestClose)}`;
+    }
+    return "Đang Cập Nhật....";
+  };
+  // Hiển thị khung giá từ thấp nhất đến giá cao nhất 
+  const getPriceRange = (prices) => {
+    if (Array.isArray(prices) && prices.length > 0) {
+      const unitPrices = prices.map(price => price.unitPrice);
+      const minPrice = Math.min(...unitPrices);
+      const maxPrice = Math.max(...unitPrices);
+
+      return `${minPrice} - ${maxPrice} VND`;
+    }
+    return "Đang Cập Nhật....";
+  };
+
+  const operatingHours = getOperatingHours(court.slotOfCourt);
+  const priceRange = getPriceRange(court.price);
 
   return (
     <section className="product-detail-container">
       <div className="image-gallery-container">
-        <ReactImageGallery
-          showBullets={false}
-          showFullscreenButton={false}
-          showPlayButton={false}
-          items={productDetailItem.images}
-        />
+        {court.images && (
+          <ReactImageGallery
+            showBullets={false}
+            showFullscreenButton={false}
+            showPlayButton={false}
+            items={court.images.map((url) => ({
+              original: url,
+              thumbnail: url
+            }))}
+          />
+        )}
       </div>
 
       <div className='product'>
         <div className="amenities-container">
-          <h2 className="product-title">{productDetailItem.title}<div className="rating-container">
-            <div style={{ display: "flex", alignItems: "center" }}>
-            <Rating name="read-only" value={productDetailItem.star} readOnly />
-              <div
-                style={{ fontSize: "20px", color: isFavorited ? "red" : "grey", cursor: "pointer" }}
-                onClick={toggleFavorite}
-              >
-                <FaHeart />
-              </div>
-            </div>
-          </div></h2>
+          <h2 className="product-title">{court.courtName}
+            
+          </h2>
           <h3 className="product-category">
-            <LuMapPin /> <span>{productDetailItem.address}</span>
+            <LuMapPin /> <span>{court.courtAddress}</span>
           </h3>
           <div className="product-reviews">
-
+            {/* Reviews component here */}
           </div>
           <p className="product-brand">
-            Giờ Hoạt Động: <span>{productDetailItem.clock}</span>
+            Giờ Hoạt Động: <span>{operatingHours}</span>
           </p>
           <p className="product-brand">
-            Quy mô: <span>{productDetailItem.numberofcourt}</span>
+            Quy mô: <span>{court.courtQuantity}</span>
           </p>
-
           <p className="product-sku">
-            Điện Thoại: <span>{productDetailItem.phoneNumber}</span>
+            Điện Thoại: <span>{court.phoneNumber}</span>
           </p>
           <p className="product-price">
-            Giá: <span>{productDetailItem.price}</span>
+            Giá: <span>{priceRange} </span>
           </p>
         </div>
 
@@ -113,7 +141,7 @@ const CourtDetail = () => {
         </div>
 
         <button className="btn-book">
-          <NavLink className="dropdown-item" to="/booking"onClick={() => window.scrollTo(0, 100)}>Đặt sân</NavLink>
+          <NavLink className="dropdown-item" to="/booking" onClick={() => window.scrollTo(0, 100)}>Đặt sân</NavLink>
         </button>
       </div>
     </section>

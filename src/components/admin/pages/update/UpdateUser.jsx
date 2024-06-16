@@ -1,25 +1,18 @@
 import React, { useState, useEffect } from "react";
-import {
-  TextField,
-  Button,
-  Dialog,
-  Slide,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  IconButton
+import { TextField, Button, Dialog, Slide, Select, MenuItem, InputLabel, FormControl, IconButton,FormHelperText,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from '@mui/icons-material/Edit';
+import { updateByUserID } from "../../../../services/UserServices";
 import "../update/UpdateUser.css";
 
 const Transition = React.forwardRef((props, ref) => (
   <Slide direction="up" ref={ref} {...props} />
 ));
 
-const UpdateUser = ({ open, handleClose, user }) => {
+const UpdateUser = ({ open, handleClose, user, refreshData }) => {
   const [formData, setFormData] = useState({
+    userName: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -27,14 +20,18 @@ const UpdateUser = ({ open, handleClose, user }) => {
     phone: "",
     role: "",
   });
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (user) {
       setFormData({
-        firstName: user.firstname || "",
-        lastName: user.lastname || "",
+        userName: user.userName || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
         email: user.email || "",
-        password: "",
+        password: user.password || "",
         phone: user.phone || "",
         role: user.role || "",
       });
@@ -56,27 +53,59 @@ const UpdateUser = ({ open, handleClose, user }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.userName) {
+      newErrors.userName = "User Name is required";
+    }
+    if (!formData.firstName) {
+      newErrors.firstName = "First Name is required";
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = "Last Name is required";
+    }
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    }
+    if (!formData.phone) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\d+$/.test(formData.phone)) {
+      newErrors.phone = "Please enter a valid phone number";
+    }
+    if (!formData.role) {
+      newErrors.role = "Role is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      alert("Please enter a valid email address.");
+    if (!validate()) {
       return;
     }
-    if (!/^\d+$/.test(formData.phone)) {
-      alert("Please enter a valid phone number.");
-      return;
+
+    setSubmitting(true);
+    setApiError("");
+    
+    try {
+      await updateByUserID(user.id, formData);
+      refreshData();
+      handleClose();
+    } catch (error) {
+      setApiError(
+        error.response?.data?.message || "An error occurred while updating the user."
+      );
+    } finally {
+      setSubmitting(false);
     }
-    console.log(formData);
-    // Add your update form submission logic here
-    handleClose();
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      phone: "",
-      role: "",
-    });
   };
 
   return (
@@ -90,14 +119,31 @@ const UpdateUser = ({ open, handleClose, user }) => {
       <div className="update">
         <div className="updateContainer">
           <div className="header">
-            <h3> <EditIcon style={{fontSize:"70px"}}/>Update User Form</h3>
+            <h3><EditIcon style={{ fontSize: "70px" }} /> Update User Form</h3>
             <IconButton aria-label="close" onClick={handleClose} color="error" className="close-button">
               <CloseIcon />
             </IconButton>
           </div>
           <form onSubmit={handleSubmit}>
+            {apiError && (
+              <div className="api-error" style={{ color: "red" }}>
+                {apiError}
+              </div>
+            )}
             <div className="form-row">
               <div className="form-column">
+                <TextField
+                  id="userName"
+                  label="User Name*"
+                  variant="outlined"
+                  name="userName"
+                  value={formData.userName}
+                  onChange={handleInputChange}
+                  error={!!errors.userName}
+                  helperText={errors.userName}
+                  fullWidth
+                  margin="normal"
+                />
                 <TextField
                   id="firstName"
                   label="First Name*"
@@ -105,6 +151,8 @@ const UpdateUser = ({ open, handleClose, user }) => {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
                   fullWidth
                   margin="normal"
                 />
@@ -114,6 +162,8 @@ const UpdateUser = ({ open, handleClose, user }) => {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
                   fullWidth
                   margin="normal"
                 />
@@ -124,6 +174,8 @@ const UpdateUser = ({ open, handleClose, user }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
+                  error={!!errors.email}
+                  helperText={errors.email}
                   type="email"
                   fullWidth
                   margin="normal"
@@ -137,6 +189,8 @@ const UpdateUser = ({ open, handleClose, user }) => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
+                  error={!!errors.password}
+                  helperText={errors.password}
                   fullWidth
                   margin="normal"
                 />
@@ -147,12 +201,14 @@ const UpdateUser = ({ open, handleClose, user }) => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
+                  error={!!errors.phone}
+                  helperText={errors.phone}
                   type="tel"
                   fullWidth
                   margin="normal"
                 />
                 <FormControl fullWidth margin="normal">
-                  <InputLabel id="demo-simple-select-label">Role</InputLabel>
+                  <InputLabel id="role-select-label">Role</InputLabel>
                   <Select
                     labelId="role-select-label"
                     id="role-select"
@@ -164,6 +220,9 @@ const UpdateUser = ({ open, handleClose, user }) => {
                     <MenuItem value="user">User</MenuItem>
                     <MenuItem value="staff">Staff</MenuItem>
                   </Select>
+                  {errors.role && (
+                    <FormHelperText error>{errors.role}</FormHelperText>
+                  )}
                 </FormControl>
               </div>
             </div>
@@ -173,10 +232,10 @@ const UpdateUser = ({ open, handleClose, user }) => {
                 variant="contained"
                 color="warning"
                 className="form-button"
+                disabled={submitting}
               >
                 Update
               </Button>
-              
             </div>
           </form>
         </div>

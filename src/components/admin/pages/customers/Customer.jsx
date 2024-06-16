@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/sidebar/Sidebar";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from "@mui/material";
+import MuiAlert from '@mui/material/Alert';
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
@@ -10,8 +11,11 @@ import "../customers/Customer.css";
 import UserDetail from "../single/UserDetail";
 import NewUser from "../new/NewUser";
 import UpdateUser from "../update/UpdateUser";
-import axios from "axios";
-import { fetchAllUsers } from "../../../../services/UserServices";
+import { deleteByUserID, fetchAllUsers } from "../../../../services/UserServices";
+
+const Alert = React.forwardRef((props, ref) => {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Customer = () => {
   const [data, setData] = useState([]);
@@ -19,12 +23,14 @@ const Customer = () => {
   const [dialogType, setDialogType] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const fetchData = async () => {
     try {
       const response = await fetchAllUsers();
       setData(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -42,11 +48,16 @@ const Customer = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8080/demo/admin/list-users/${deleteId}`);
-      setData(data.filter((item) => item.email !== deleteId));
+      await deleteByUserID(deleteId);
+      setSnackbarMessage("User deleted successfully!");
+      setSnackbarSeverity("success");
+      fetchData();
       handleClose();
     } catch (error) {
-      console.error("Error deleting data:", error);
+      setSnackbarMessage("Error deleting user!");
+      setSnackbarSeverity("error");
+    } finally {
+      setSnackbarOpen(true);
     }
   };
 
@@ -60,6 +71,10 @@ const Customer = () => {
     setOpen(false);
     setSelectedUser(null);
     setDeleteId(null);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const actionColumn = [
@@ -89,7 +104,7 @@ const Customer = () => {
             variant="outlined"
             color="error"
             startIcon={<DeleteIcon />}
-            onClick={() => handleDelete(params.row.email)}
+            onClick={() => handleDelete(params.row.id)}
           >
             Delete
           </Button>
@@ -100,6 +115,7 @@ const Customer = () => {
 
   const userColumns = [
     { field: "id", headerName: "ID", width: 70 },
+    { field: "userName", headerName: "User Name", width: 140 },
     { field: "firstName", headerName: "First Name", width: 140 },
     { field: "lastName", headerName: "Last Name", width: 140 },
     { field: "email", headerName: "Email", width: 200 },
@@ -158,6 +174,11 @@ const Customer = () => {
           </DialogActions>
         </Dialog>
       )}
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

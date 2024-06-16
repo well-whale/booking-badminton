@@ -12,10 +12,13 @@ import {
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import "../new/NewCourt.css";
 import Sidebar from "../../components/sidebar/Sidebar";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { imageDB } from "../../../../firebaseimage/Config";
 
 const Transition = React.forwardRef((props, ref) => (
   <Slide direction="up" ref={ref} {...props} />
 ));
+
 const NewCourt = ({ open, handleClose }) => {
   const initialFormData = {
     court_name: "",
@@ -23,9 +26,11 @@ const NewCourt = ({ open, handleClose }) => {
     court_address: "",
     court_quantity: "",
     slot_duration: "",
+    images: [],
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [imageFiles, setImageFiles] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,10 +47,52 @@ const NewCourt = ({ open, handleClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleImageChange = (e) => {
+    setImageFiles([...e.target.files]);
+  };
+
+  const uploadImages = async () => {
+    const uploadedImageURLs = await Promise.all(
+      imageFiles.map(async (file) => {
+        const storageRef = ref(imageDB, `courts/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        return new Promise((resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              // Handle progress if needed
+            },
+            (error) => {
+              console.error("Upload failed:", error);
+              reject(error);
+            },
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                resolve(downloadURL);
+              });
+            }
+          );
+        });
+      })
+    );
+
+    return uploadedImageURLs;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    const uploadedImageURLs = await uploadImages();
+    const updatedFormData = {
+      ...formData,
+      images: uploadedImageURLs,
+    };
+    console.log(updatedFormData);
+
+    // Here you can add the API call to save the updatedFormData to your database
+
     setFormData(initialFormData);
+    setImageFiles([]);
   };
 
   return (
@@ -110,19 +157,25 @@ const NewCourt = ({ open, handleClose }) => {
                   fullWidth
                   margin="normal"
                 />
-                {/* <FormControl fullWidth margin="normal">
-                <InputLabel id="slotDurationLabel">Slot Duration (minutes)*</InputLabel>
-                <Select
-                  labelId="slotDurationLabel"
-                  id="slotDuration"
-                  value={formData.slot_duration}
-                  name="slot_duration"
-                  onChange={handleSlotDurationChange}
-                >
-                  <MenuItem value="30">30</MenuItem>
-                  <MenuItem value="60">60</MenuItem>
-                </Select>
-              </FormControl> */}
+                <FormControl fullWidth margin="normal">
+                  <InputLabel id="slotDurationLabel">Slot Duration (minutes)*</InputLabel>
+                  <Select
+                    labelId="slotDurationLabel"
+                    id="slotDuration"
+                    value={formData.slot_duration}
+                    name="slot_duration"
+                    onChange={handleSlotDurationChange}
+                  >
+                    <MenuItem value="30">30</MenuItem>
+                    <MenuItem value="60">60</MenuItem>
+                  </Select>
+                </FormControl>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageChange}
+                />
                 <div className="newCourtFormButtons">
                   <Button
                     type="submit"
@@ -136,7 +189,10 @@ const NewCourt = ({ open, handleClose }) => {
                     variant="outlined"
                     color="secondary"
                     className="newCourtFormButton"
-                    onClick={() => setFormData(initialFormData)}
+                    onClick={() => {
+                      setFormData(initialFormData);
+                      setImageFiles([]);
+                    }}
                   >
                     Reset
                   </Button>

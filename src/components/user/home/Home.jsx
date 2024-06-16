@@ -20,22 +20,22 @@ const HomePage = () => {
     getListCourt();
   }, []);
 
-  // const getRandomCourts = (courtsArray) => {
-  //   const shuffled = courtsArray.sort(() => 0.5 - Math.random());
-  //   return shuffled.slice(0, 9);
-  // };
-
-  // const randomCourts = getRandomCourts(courts);
-
   const getPriceRange = (prices) => {
-    if (prices.length === 0) return 'N/A';
-    const activePrices = prices.filter(price => price.activeStatus === "TT");
-    if (activePrices.length === 0) return 'N/A';
-    const unitPrices = activePrices.map(price => price.unitPrice);
-    const minPrice = Math.min(...unitPrices);
-    const maxPrice = Math.max(...unitPrices);
-    return `${minPrice} - ${maxPrice}`;
+    if (Array.isArray(prices) && prices.length > 0) {
+      const unitPrices = prices.map(price => price.unitPrice);
+      const minPrice = Math.min(...unitPrices);
+      const maxPrice = Math.max(...unitPrices);
+
+      return `${minPrice} - ${maxPrice} VND`;
+    }
+    return "Đang Cập Nhật....";
   };
+   const getRandomCourts = (courtsArray) => {
+    const shuffled = courtsArray.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 9);
+  };
+
+  const randomCourts = getRandomCourts(courts);
 
   return (
     <div className="section__container header__container">
@@ -49,10 +49,10 @@ const HomePage = () => {
       <section className="section__container popular__container">
         <h2 className="section__header">Popular Badminton Courts</h2>
         <div className="popular__grid">
-          {courts.map((court, index) => (
+          {randomCourts.map((court, index) => (
             <NavLink
               key={index}
-              to={`/view`}
+              to={`/view/${court.courtID}`}
               className="popular__card"
               onClick={() => window.scrollTo(0, 100)}
             >
@@ -69,9 +69,8 @@ const HomePage = () => {
                   </div>
                   <div className="rater-container price">
                     <p>
-                    {getPriceRange(court.price)}
+                      {getPriceRange(court.price)}
                     </p>
-                      
                   </div>
                 </div>
               </div>

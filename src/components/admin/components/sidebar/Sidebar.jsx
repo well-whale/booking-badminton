@@ -74,7 +74,7 @@ const Sidebar = () => {
             </li>
           </NavLink>
 
-          <NavLink to="/logout" className={({ isActive }) => isActive ? "active" : ""}>
+          <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>
             <li>
               <ExitToAppOutlinedIcon className="icon" />
               <span>Logout</span>

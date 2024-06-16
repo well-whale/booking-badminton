@@ -197,6 +197,7 @@ nav {
 .rater-container {
   display: flex;
   align-items: center;
+  justify-content: space-around;
 }
 
 .rater {
@@ -211,7 +212,7 @@ nav {
 }
 
 .header__content h1 {
-  font-family: "Roboto",sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 56px;
   margin: 0px 0px 16px;
   margin-bottom: 1rem;
@@ -264,7 +265,7 @@ nav {
 .popular__card__header h4 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: var (--text-dark);
+  color: var(--text-dark);
 }
 
 .popular__content {
