@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, NavLink } from "react-router-dom";
+import { useParams, NavLink, useNavigate } from "react-router-dom";
 import ReactImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import "../courts/CourtDetail.css";
@@ -16,6 +16,7 @@ const CourtDetail = () => {
   const [court, setCourt] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const getDetailCourt = async () => {
     try {
@@ -57,7 +58,6 @@ const CourtDetail = () => {
     { name: 'Đồ ăn', icon: <IoFastFoodOutline /> }
   ];
 
-  //Hiển thị giừo hoạt đông từ giờ sớm nhất đến muộn nhất 
   const getOperatingHours = (slots) => {
     if (Array.isArray(slots) && slots.length > 0) {
       const times = slots.map(slot => ({
@@ -72,7 +72,7 @@ const CourtDetail = () => {
     }
     return "Đang Cập Nhật....";
   };
-  // Hiển thị khung giá từ thấp nhất đến giá cao nhất 
+
   const getPriceRange = (prices) => {
     if (Array.isArray(prices) && prices.length > 0) {
       const unitPrices = prices.map(price => price.unitPrice);
@@ -86,6 +86,10 @@ const CourtDetail = () => {
 
   const operatingHours = getOperatingHours(court.slotOfCourt);
   const priceRange = getPriceRange(court.price);
+
+  const handleBookingClick = () => {
+    navigate(`/booking/${court.courtID}`);
+  };
 
   return (
     <section className="product-detail-container">
@@ -139,10 +143,12 @@ const CourtDetail = () => {
             ))}
           </ul>
         </div>
+        <NavLink to={`/booking/${court.courtID}`}>
+  <button className="btn-book" onClick={handleBookingClick}>
+    Đặt sân
+  </button>
+</NavLink>
 
-        <button className="btn-book">
-          <NavLink className="dropdown-item" to="/booking" onClick={() => window.scrollTo(0, 100)}>Đặt sân</NavLink>
-        </button>
       </div>
     </section>
   );

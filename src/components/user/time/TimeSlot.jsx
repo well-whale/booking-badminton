@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+
+import React, { useEffect, useState } from 'react';
+import { NavLink, useParams } from 'react-router-dom';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import "./TimeSlot.css"; // Import the CSS file
+import './TimeSlot.css';
+import { getCourtByIdCourt } from '../../../services/UserServices';
 
-// Function to generate time slots
 const generateTimeSlots = (startTime, endTime, interval) => {
   const timeSlots = [];
   let currentTime = startTime;
 
   while (currentTime <= endTime) {
-    const hours = String(Math.floor(currentTime / 60)).padStart(2, "0");
-    const minutes = String(currentTime % 60).padStart(2, "0");
+    const hours = String(Math.floor(currentTime / 60)).padStart(2, '0');
+    const minutes = String(currentTime % 60).padStart(2, '0');
     const timeString = `${hours}:${minutes}`;
     timeSlots.push({ timeString, id: currentTime });
     currentTime += interval;
@@ -22,39 +23,87 @@ const generateTimeSlots = (startTime, endTime, interval) => {
   return timeSlots;
 };
 
-// Court details
-const courtDetail = {
-  image: "https://sonsanepoxy.vn/wp-content/uploads/2023/07/lap-dat-he-thong-den-chieu-san-cau-long.jpg",
-  title: "Sân cầu lông Tre Xanh",
-  clockStart: 5, // Start time in hours
-  clockEnd: 23, // End time in hours
-  numberofcourt: 4,
-  address: "50 Xô Viết Nghệ Tĩnh, Phường 19, Bình Thạnh, Thành phố Hồ Chí Minh",
-  phoneNumber: "03456789",
-  price: 50000, // Price per 30 minutes
-};
-
-// Function to generate area names based on the number of courts
 const generateAreas = (numCourts) => {
   return Array.from({ length: numCourts }, (_, i) => `Sân ${i + 1}`);
 };
 
 const TimeSlots = () => {
-  const [selectedArea, setSelectedArea] = useState("Sân 1");
+  const [court, setCourt] = useState(null);
+  const { idCourt } = useParams();
+  const [selectedArea, setSelectedArea] = useState('Sân 1');
   const [selectedTimes, setSelectedTimes] = useState([]);
   const [firstSelected, setFirstSelected] = useState(null);
   const [timeSlotsAM, setTimeSlotsAM] = useState([]);
   const [timeSlotsPM, setTimeSlotsPM] = useState([]);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const getDetailCourt = async () => {
+    try {
+      const res = await getCourtByIdCourt(idCourt);
+      if (res.status === 200) {
+        setCourt(res.data);
+        console.log(res.data);
+      } else {
+        setError("Failed to fetch court details");
+      }
+    } catch (err) {
+      setError("An error occurred while fetching court details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const startTime = courtDetail.clockStart * 60; // 5:00 AM in minutes
-    const endTime = courtDetail.clockEnd * 60; // 11:00 PM in minutes
-    const interval = 30; // 30 minutes interval
-    setTimeSlotsAM(generateTimeSlots(startTime, 12 * 60, interval));
-    setTimeSlotsPM(generateTimeSlots(12.5 * 60, endTime, interval));
-  }, []);
+    getDetailCourt();
+  }, [idCourt]);
+
+  const getOpenTime = (slots) => {
+    if (Array.isArray(slots) && slots.length > 0) {
+      const times = slots.map(slot => ({
+        open: slot.openTime,
+      }));
+      const earliestOpen = Math.min(...times.map(t => new Date(`1970-01-01T${t.open}`).getTime()));
+      const formatTime = time => new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      return `${formatTime(earliestOpen)}`;
+    }
+    return "Đang Cập Nhật....";
+  };
+
+  const getCloseTime = (slots) => {
+    if (Array.isArray(slots) && slots.length > 0) {
+      const times = slots.map(slot => ({
+        close: slot.closeTime
+      }));
+      const latestClose = Math.max(...times.map(t => new Date(`1970-01-01T${t.close}`).getTime()));
+      const formatTime = time => new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      return `${formatTime(latestClose)}`;
+    }
+    return "Đang Cập Nhật....";
+  };
+  const parseTime = (timeStr) => {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+  useEffect(() => {
+    if (court) {
+      const startTime = parseTime(getOpenTime(court.slotOfCourt));
+      console.log(startTime)
+      const endTime = parseTime(getCloseTime(court.slotOfCourt));
+      console.log(endTime)
+
+      const interval = 30;
+
+      if (startTime !== null) {
+        setTimeSlotsAM(generateTimeSlots(startTime, 12 * 60, interval));
+        setTimeSlotsPM(generateTimeSlots(12.5 * 60, endTime, interval));
+      }
+    }
+  }, [court]);
 
   const handleAreaChange = (event) => {
     setSelectedArea(event.target.value);
@@ -74,19 +123,31 @@ const TimeSlots = () => {
         newSelectedTimes.push(i);
       }
       setSelectedTimes(newSelectedTimes);
-      setFirstSelected(null); // Reset firstSelected after the range is selected
+      setFirstSelected(null);
       setStartTime(start);
       setEndTime(end);
     }
   };
 
-  const areas = generateAreas(courtDetail.numberofcourt);
+  const areas = generateAreas(court?.courtQuantity || 0);
 
   const selectedTimeRange = startTime !== null && endTime !== null
-    ? `${String(Math.floor(startTime / 60)).padStart(2, "0 ")}:${String(startTime % 60).padStart(2, "0")} - ${String(Math.floor(endTime / 60)).padStart(2, "0")}:${String(endTime % 60).padStart(2, "0")}`
+    ? `${String(Math.floor(startTime / 60)).padStart(2, '0')}:${String(startTime % 60).padStart(2, '0')} - ${String(Math.floor(endTime / 60)).padStart(2, '0')}:${String(endTime % 60).padStart(2, '0')}`
     : '';
 
-  const totalPrice = selectedTimes.length > 0 ? ((endTime - startTime) / 60 * courtDetail.price * 2) : 0;
+  const totalPrice = selectedTimes.length > 0 ? ((endTime - startTime) / 60 * (court?.price?.[0]?.unitPrice || 0)) : 0;
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (!court) {
+    return <div>No court details available</div>;
+  }
 
   return (
     <div className="container">
@@ -113,7 +174,7 @@ const TimeSlots = () => {
           {timeSlotsAM.map(({ timeString, id }) => (
             <div
               key={id}
-              className={`time ${selectedTimes.includes(id) ? "selected" : ""}`}
+              className={`time ${selectedTimes.includes(id) ? 'selected' : ''}`}
               onClick={() => toggleTimeSlot(id)}
             >
               {timeString}
@@ -125,7 +186,7 @@ const TimeSlots = () => {
           {timeSlotsPM.map(({ timeString, id }) => (
             <div
               key={id}
-              className={`time ${selectedTimes.includes(id) ? "selected" : ""}`}
+              className={`time ${selectedTimes.includes(id) ? 'selected' : ''}`}
               onClick={() => toggleTimeSlot(id)}
             >
               {timeString}
@@ -135,9 +196,11 @@ const TimeSlots = () => {
       </div>
       <div className="right-section">
         <div className="area-info">
-          <img src={courtDetail.image} alt={courtDetail.title} />
-          <h2>{courtDetail.title}</h2>
-          <h5>{courtDetail.address}</h5>
+          {court?.images?.[0] && (
+            <img src={court.images[0]} alt={court.courtName} />
+          )}
+          <h2>{court.courtName}</h2>
+          <h5>{court.courtAddress}</h5>
           <label>
             {selectedTimeRange}
           </label>

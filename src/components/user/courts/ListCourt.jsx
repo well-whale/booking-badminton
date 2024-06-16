@@ -12,7 +12,6 @@ const ListCourt = () => {
     const res = await fetchAllCourts();
     if (res.status === 200) {
       setCourt(res.data);
-      console.log(res.data);
     }
   };
   const getRandomCourts = (courtsArray) => {

@@ -25,7 +25,7 @@ const address = [
   "Quận Tân Bình",
   "Quận Bình Tân",
   "Quận Tân Phú",
-  "Thành phố Thủ Đức",
+  "Thủ Đức",
   "Bình Chánh",
   "Hóc Môn",
   "Củ Chi",
@@ -60,15 +60,15 @@ const SearchList = () => {
   };
 
   const getPriceRange = (prices) => {
-    if (!prices || prices.length === 0) return "Đang Cập Nhật...";
-    const activePrices = prices.filter((price) => price.activeStatus === "TT");
-    if (activePrices.length === 0) return "Đang Cập Nhật...";
-    const unitPrices = activePrices.map((price) => price.unitPrice);
-    const minPrice = Math.min(...unitPrices);
-    const maxPrice = Math.max(...unitPrices);
-    return `${minPrice}VND - ${maxPrice}VND`;
-  };
+    if (Array.isArray(prices) && prices.length > 0) {
+      const unitPrices = prices.map(price => price.unitPrice);
+      const minPrice = Math.min(...unitPrices);
+      const maxPrice = Math.max(...unitPrices);
 
+      return `${minPrice} - ${maxPrice} VND`;
+    }
+    return "Đang Cập Nhật....";
+  };
   return (
     <div>
       <div className="section__container">
