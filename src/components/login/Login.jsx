@@ -6,8 +6,9 @@ import "../login/Login.css";
 import GoogleOAuth from "./Google_OAuth";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { loginUser } from "../../redux/apiRequest";
+// import { loginUser } from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
+import {loginUser} from  "../../services/UserServices";
 
 function LoginForm() {
     const [username, setUsername] = useState("");
@@ -16,8 +17,7 @@ function LoginForm() {
     const navigate = useNavigate();
     const [isShowPassword, setIsShowPassword] = useState(false);
 
-    const handleLogin = (e) => {
-        e.preventDefault();
+    const handleLogin =  async() => {
 
         if (!username || !password) {
             toast.error("Both username and password fields are rquired.");
@@ -28,8 +28,8 @@ function LoginForm() {
             username: username,
             password: password,
         };
-
-        loginUser(newUser, dispatch,navigate);
+         await loginUser( username,password)
+        // loginUser(newUser, dispatch,navigate);
     };
 
     return (

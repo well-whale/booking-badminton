@@ -17,7 +17,6 @@ const updateByUserID = (userId, newUser) => {
 };
 
 
-
 const fetchAllCourts = () => {
   return axios.get('court/getAllCourt');
 };
@@ -30,5 +29,14 @@ const getCourtByIdCourt = (idcourt) => {
   return axios.get(`court/id/${idcourt}`);
 };
 
+ const loginUser = (valueLogin,password ) => {
+  return axios.post('/login',{valueLogin, password})
+ }
+  const checkSubCourt = (data) => {
+    return axios.post('booking/check',data);
+  }
 
-export { newUser, fetchAllUsers,fetchAllCourts,searchByDistrict,getCourtByIdCourt,deleteByUserID,updateByUserID};
+  const getSubCourtStatus = () =>{
+    return axios.get('booking/getCourtStatus');
+  }
+export { loginUser,newUser, fetchAllUsers,fetchAllCourts,searchByDistrict,getCourtByIdCourt,deleteByUserID,updateByUserID,checkSubCourt,getSubCourtStatus};
